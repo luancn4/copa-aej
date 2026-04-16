@@ -10,9 +10,6 @@ export const options: NextAuthOptions = {
         "https://discord.com/oauth2/authorize?scope=identify+guilds",
     }),
   ],
-  pages: {
-    signIn: "/",
-  },
 
   callbacks: {
     async redirect({ url, baseUrl }) {
