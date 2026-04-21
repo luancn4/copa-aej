@@ -1,6 +1,14 @@
 import { LoginButton } from "@/components/LoginButton";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  if (session?.user?.id) {
+    redirect("/albums");
+  }
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center font-sans bg-white">
       <main className="flex flex-col items-center justify-center w-full text-center">
