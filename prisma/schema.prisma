@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StickerCategory {
+  TEAM
+  SPECIAL
+}
+
+model User {
+  id        String   @id @default(cuid())
+  discordId String   @unique
+  name      String
+  email     String?
+  image     String?
+  album     Album?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Album {
+  id        String         @id @default(cuid())
+  userId    String         @unique
+  slug      String
+  name      String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stickers  AlbumSticker[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model Sticker {
+  id                 Int             @id @default(autoincrement())
+  code               String          @unique
+  sequence           Int             @unique
+  label              String
+  category           StickerCategory
+  selectionName      String?
+  selectionOrder     Int?
+  stickerInSelection Int?
+  albums             AlbumSticker[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+}
+
+model AlbumSticker {
+  id        String   @id @default(cuid())
+  albumId   String
+  stickerId Int
+  quantity  Int      @default(0)
+  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  sticker   Sticker  @relation(fields: [stickerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([albumId, stickerId])
+  @@index([albumId])
+  @@index([stickerId])
+}
