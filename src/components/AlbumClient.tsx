@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { AlbumDetail, AlbumStickerItem } from "@/lib/catalog";
+import { SummaryStatCard } from "@/components/SummaryStatCard";
 
 type AlbumClientProps = {
   initialAlbum: AlbumDetail;
@@ -24,7 +25,7 @@ function buildSummary(stickers: AlbumStickerItem[], totalStickers: number) {
 
 function groupStickers(stickers: AlbumStickerItem[]) {
   const groups = new Map<string, AlbumStickerItem[]>();
-  
+
   stickers.forEach((sticker) => {
     const key = sticker.selectionName ?? "Especiais";
     const group = groups.get(key) ?? [];
@@ -91,90 +92,89 @@ export function AlbumClient({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl bg-white p-4 shadow-sm">
-          <p className="text-sm text-zinc-500">Faltando</p>
-          <p className="text-2xl font-semibold text-zinc-900">
-            {summary.missingCount}
-          </p>
-        </div>
-        <div className="rounded-xl bg-white p-4 shadow-sm">
-          <p className="text-sm text-zinc-500">Obtidas</p>
-          <p className="text-2xl font-semibold text-zinc-900">
-            {summary.ownedUnique}
-          </p>
-        </div>
-        <div className="rounded-xl bg-white p-4 shadow-sm">
-          <p className="text-sm text-zinc-500">Repetidas</p>
-          <p className="text-2xl font-semibold text-zinc-900">
-            {summary.duplicateCount}
-          </p>
-        </div>
+    <div className="space-y-8">
+      <div className="grid gap-4 md:grid-cols-3">
+        <SummaryStatCard
+          label="Faltando"
+          value={summary.missingCount}
+          color="red"
+        />
+        <SummaryStatCard
+          label="Já tenho"
+          value={summary.ownedUnique}
+          color="green"
+        />
+        <SummaryStatCard
+          label="Repetidas"
+          value={summary.duplicateCount}
+          color="orange"
+        />
       </div>
 
       {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-xl border border-[#EB5757]/25 bg-[#FFF3F2] px-4 py-3 text-sm text-[#B24545]">
           {error}
         </p>
       ) : null}
 
       {!isOwner ? (
-        <p className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-          Visualizacao publica. Apenas o dono do album pode alterar quantidades.
+        <p className="rounded-xl border border-[#1E3A5F]/15 bg-[#EEF3F8] px-4 py-3 text-sm text-[#1E3A5F]">
+          Public view. Only the album owner can change sticker quantities.
         </p>
       ) : null}
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {groupedStickers.map(([groupName, groupStickers]) => (
-          <section key={groupName} className="space-y-3">
-            <div>
-              <h3 className="text-lg font-semibold text-zinc-900">
-                {groupName}
-              </h3>
-              <p className="text-sm text-zinc-500">
-                {groupStickers.filter((sticker) => sticker.quantity > 0).length}{" "}
-                de {groupStickers.length} obtidas
-              </p>
+          <section key={groupName} className="space-y-4">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-[#0F2A44]">
+                  {groupName}
+                </h3>
+                <p className="text-sm text-[#6B7280]">
+                  {
+                    groupStickers.filter((sticker) => sticker.quantity > 0)
+                      .length
+                  }{" "}
+                  de {groupStickers.length} tiradas
+                </p>
+              </div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {groupStickers.map((sticker) => {
                 const isPending = pendingStickerId === sticker.id;
                 const hasDuplicates = sticker.quantity > 1;
 
                 return (
-                  <article
-                    key={sticker.id}
-                    className="rounded-xl bg-white p-4 shadow-sm"
-                  >
+                  <article key={sticker.id} className="card-surface p-4">
                     <div className="mb-4 flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                        <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#9CA3AF]">
                           #{sticker.code}
                         </p>
-                        <p className="font-medium text-zinc-900">
+                        <p className="text-sm font-semibold text-[#0F2A44]">
                           {sticker.label}
                         </p>
                       </div>
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${
                           sticker.quantity === 0
-                            ? "bg-zinc-100 text-zinc-600"
+                            ? "bg-[#FFF3F2] text-[#EB5757]"
                             : hasDuplicates
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-emerald-100 text-emerald-700"
+                              ? "bg-[#FFF3E8] text-[#F2994A]"
+                              : "bg-[#EEF9F2] text-[#27AE60]"
                         }`}
                       >
                         {sticker.quantity === 0
                           ? "faltando"
                           : hasDuplicates
-                            ? `${sticker.quantity} copias`
-                            : "obtida"}
+                            ? `${sticker.quantity} repetidas`
+                            : "já tenho"}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className="inline-flex items-center rounded-full border border-zinc-200">
+                      <div className="inline-flex items-center rounded-xl border border-[#E5E7EB] bg-[#F9FAFB]">
                         <button
                           type="button"
                           onClick={() =>
@@ -186,11 +186,11 @@ export function AlbumClient({
                           disabled={
                             !isOwner || isPending || sticker.quantity === 0
                           }
-                          className="px-3 py-1 text-lg text-zinc-700 disabled:cursor-not-allowed disabled:text-zinc-300"
+                          className="px-3 py-2 text-lg text-[#0F2A44] disabled:cursor-not-allowed disabled:text-[#CBD5E1]"
                         >
                           -
                         </button>
-                        <span className="min-w-10 text-center text-sm font-medium text-zinc-900">
+                        <span className="min-w-10 text-center text-sm font-semibold text-[#0F2A44]">
                           {sticker.quantity}
                         </span>
                         <button
@@ -199,13 +199,13 @@ export function AlbumClient({
                             updateQuantity(sticker.id, sticker.quantity + 1)
                           }
                           disabled={!isOwner || isPending}
-                          className="px-3 py-1 text-lg text-zinc-700 disabled:cursor-not-allowed disabled:text-zinc-300"
+                          className="px-3 py-2 text-lg text-[#0F2A44] disabled:cursor-not-allowed disabled:text-[#CBD5E1]"
                         >
                           +
                         </button>
                       </div>
                       {isPending ? (
-                        <span className="text-xs text-zinc-400">
+                        <span className="text-xs text-[#9CA3AF]">
                           salvando...
                         </span>
                       ) : null}

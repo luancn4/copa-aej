@@ -5,9 +5,9 @@ export const LogoutButton = ({ text }: { text?: string }) => {
   return (
     <button
       onClick={() => signOut({ callbackUrl: "/" })}
-      className="rounded-full bg-white text-black px-3 py-1 hover:bg-gray-200 cursor-pointer"
+      className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-white/20 px-4 text-sm font-medium text-white transition hover:bg-white/10"
     >
-      {text || "Logout"}
+      {text || "Sair"}
     </button>
   );
 };
