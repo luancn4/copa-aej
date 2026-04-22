@@ -9,10 +9,10 @@ export const GoBackButton = ({
   text?: string;
 }) => {
   const router = useRouter();
-  
+
   return (
-    <p className={className} onClick={() => router.back()}>
+    <button type="button" className={className} onClick={() => router.back()}>
       {text || "Voltar"}
-    </p>
+    </button>
   );
 };
